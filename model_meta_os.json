@@ -1,0 +1,25 @@
+{
+  "model_name": "FAST-I OS",
+  "endpoint": "OS",
+  "time_unit": "months",
+  "fit_object_name": "fit_os2_full",
+  "formula": "OS2_Surv ~ p16 + Stage0 + Age + Smoke + interval_post + LMR_pre_w +     ALB_pre_w + ALB_L_w + HB_pre_w + rcs(LMR_dt_w, c(-0.088823529,     -0.037810232, -0.008348214))",
+  "predictors_clean": ["p16", "Stage0", "Age", "Smoke", "interval_post", "LMR_pre_w", "ALB_pre_w", "ALB_L_w", "HB_pre_w", "LMR_dt_w"],
+  "categorical_levels": {
+    "Smoke": ["0", "1", "2"],
+    "p16": ["0", "1", "2"],
+    "Stage0": ["1", "2"]
+  },
+  "reference_levels": {
+    "Smoke": "0",
+    "p16": "0",
+    "Stage0": "1"
+  },
+  "rcs": {
+    "variable": "LMR_dt_w",
+    "knots": [-0.088823529, -0.037810232, -0.008348214],
+    "n_basis_terms": 2
+  },
+  "center": 1.57397090090284,
+  "n_train": 382
+}
