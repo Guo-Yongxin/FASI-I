@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FAST-I HNSCC Overall Survival Risk Calculator</title>
+    <meta
+      name="description"
+      content="Static GitHub Pages version of the FAST-I HNSCC Overall Survival Risk Calculator."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <aside class="sidebar">
+        <div class="sidebar-card">
+          <h2 class="sidebar-title">Patient characteristics</h2>
+
+          <form id="risk-form" class="risk-form" novalidate>
+            <div class="form-field">
+              <label for="age">Age (years)</label>
+              <input id="age" name="age" type="number" min="18" max="100" step="1" value="60" />
+            </div>
+
+            <div class="form-field">
+              <label for="smoke">Smoking history</label>
+              <select id="smoke" name="smoke">
+                <option value="0">Never</option>
+                <option value="1">Current</option>
+                <option value="2">Former</option>
+              </select>
+            </div>
+
+            <div class="grid-two">
+              <div class="form-field">
+                <label for="t-stage">T stage (AJCC 8th)</label>
+                <select id="t-stage" name="tStage" required>
+                  <option value="" selected>Select T stage</option>
+                  <option value="1">T1</option>
+                  <option value="2">T2</option>
+                  <option value="3">T3</option>
+                  <option value="4">T4</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="n-stage">N stage (AJCC 8th)</label>
+                <select id="n-stage" name="nStage" required>
+                  <option value="" selected>Select N stage</option>
+                  <option value="0">N0</option>
+                  <option value="1">N1</option>
+                  <option value="2">N2</option>
+                  <option value="3">N3</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="primary">Primary tumour site</label>
+              <select id="primary" name="primary" required>
+                <option value="" selected>Select primary site</option>
+                <option value="1">Nasopharynx</option>
+                <option value="2">Oropharynx</option>
+                <option value="3">Larynx</option>
+                <option value="4">Hypopharynx</option>
+                <option value="5">Oral cavity</option>
+                <option value="6">Other</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="p16">
+                <span class="label-with-badge">
+                  <span>p16 status</span>
+                  <span class="violet-badge">*</span>
+                </span>
+              </label>
+              <select id="p16" name="p16" disabled>
+                <option value="0">Negative</option>
+                <option value="1">Positive</option>
+                <option value="2" selected>Not tested / unknown</option>
+              </select>
+            </div>
+
+            <p class="field-caption">
+              <strong>p16 is used only for oropharyngeal carcinoma. If p16 is unavailable,
+              select "Not tested / unknown".</strong>
+            </p>
+
+            <h3 class="form-section-title">Radiotherapy (RT) and blood sampling dates</h3>
+
+            <div class="grid-two">
+              <div class="form-field">
+                <label for="rt-start-date">RT Start date</label>
+                <input id="rt-start-date" name="rtStartDate" type="date" value="2020-01-01" />
+              </div>
+              <div class="form-field">
+                <label for="rt-end-date">RT End date</label>
+                <input id="rt-end-date" name="rtEndDate" type="date" value="2020-02-19" />
+              </div>
+            </div>
+
+            <div class="grid-two">
+              <div class="form-field">
+                <label for="pre-blood-date">Pre-RT Blood test date</label>
+                <input id="pre-blood-date" name="preBloodDate" type="date" value="2020-01-01" />
+              </div>
+              <div class="form-field">
+                <label for="post-blood-date">Post-RT Blood test date</label>
+                <input id="post-blood-date" name="postBloodDate" type="date" value="2020-02-25" />
+              </div>
+            </div>
+
+            <p id="interval-summary" class="field-caption"></p>
+
+            <h3 class="form-section-title">Blood test results</h3>
+            <h4 class="form-subsection-title">Pre-RT Blood test results (Baseline)</h4>
+
+            <div class="grid-two">
+              <div class="form-field">
+                <label for="hb-pre">Hemoglobin (g/L)</label>
+                <input id="hb-pre" name="hbPre" type="number" step="1" value="135" />
+              </div>
+              <div class="form-field">
+                <label for="alb-pre">Albumin (g/L)</label>
+                <input id="alb-pre" name="albPre" type="number" step="1" value="42" />
+              </div>
+            </div>
+
+            <div class="grid-two">
+              <div class="form-field">
+                <label for="ly-pre">Lymphocytes (x10^9/L)</label>
+                <input id="ly-pre" name="lyPre" type="number" step="0.01" value="1.50" />
+              </div>
+              <div class="form-field">
+                <label for="mo-pre">Monocytes (x10^9/L)</label>
+                <input id="mo-pre" name="moPre" type="number" step="0.01" value="0.80" />
+              </div>
+            </div>
+
+            <h4 class="form-subsection-title">Post-RT Blood test results</h4>
+
+            <div class="grid-two">
+              <div class="form-field">
+                <label for="hb-post">Hemoglobin (g/L)</label>
+                <input id="hb-post" name="hbPost" type="number" step="any" required />
+              </div>
+              <div class="form-field">
+                <label for="alb-post">Albumin (g/L)</label>
+                <input id="alb-post" name="albPost" type="number" step="1" value="38" />
+              </div>
+            </div>
+
+            <div class="grid-two">
+              <div class="form-field">
+                <label for="ly-post">Lymphocytes (x10^9/L)</label>
+                <input id="ly-post" name="lyPost" type="number" step="0.01" value="1.00" />
+              </div>
+            </div>
+
+            <button id="calculate-risk" class="primary-button" type="submit" disabled>Calculate risk</button>
+          </form>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <section class="fasti-hero" aria-label="FAST-I banner">
+          <div class="fasti-hero-grid">
+            <div class="fasti-hero-copy">
+              <div class="fasti-hero-title">FAST - I</div>
+              <div class="fasti-hero-subtitle">
+                Dynamic Peri-radiotherapy Hematological Biomarkers for Overall Survival Risk
+                Stratification in Head and Neck Squamous Cell Carcinoma (HNSCC)
+              </div>
+            </div>
+            <div class="fasti-hero-media">
+              <img src="./assets/FAST-I-banner.png" alt="FAST-I banner" />
+            </div>
+          </div>
+        </section>
+
+        <section class="info-card info-card-violet">
+          <div class="info-card-strong">
+            Predicts overall survival risk in HNSCC using the locked combined model prediction
+            engine.
+          </div>
+          <div class="info-card-strong">
+            Intended to support risk stratification and post-radiotherapy surveillance. Its outputs
+            should be interpreted alongside clinical assessment by radiation oncologists.
+          </div>
+        </section>
+
+        <details class="expander">
+          <summary>How dates and sampling intervals are defined</summary>
+          <div class="expander-body">
+            <div class="expander-image-wrap">
+              <img
+                class="time-interval-image"
+                src="./assets/time-interval.png"
+                alt="Blood sampling interval diagram"
+              />
+            </div>
+            <div class="markdown-block">
+              <p><strong>Intervals</strong></p>
+              <ul>
+                <li>
+                  <strong>interval_pre</strong>: the blood sampling date minus the start date of
+                  radiotherapy (negative when sampled before RT started).
+                </li>
+                <li>
+                  <strong>interval_post*</strong>: the time of the selected post-treatment blood
+                  sample relative to the end of radiotherapy. The nearest available post-treatment
+                  blood sample was preferentially selected.<br />
+                  Otherwise, the nearest available blood sample before the end of radiotherapy was
+                  used, for example, the last week.
+                </li>
+                <li>
+                  <strong>Blood sampling interval (dt)</strong>: the time between the selected pre-
+                  and post-treatment samples.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <section id="status-message" class="status-box status-info" role="status">
+          Please correct the input values and click <strong>Calculate risk</strong> to generate
+          prediction.
+        </section>
+
+        <section id="results-section" class="results-section is-hidden">
+          <div id="result-cards" class="result-card-grid"></div>
+
+          <section class="panel">
+            <h2 class="section-title">Individual predicted overall survival curve</h2>
+            <div id="chart-container" class="chart-container"></div>
+          </section>
+
+          <details class="expander">
+            <summary>Show calculation details</summary>
+            <div class="expander-body">
+              <div id="calculation-details"></div>
+            </div>
+          </details>
+        </section>
+
+        <footer class="page-footer">
+          <div class="footer-title">FAST-I</div>
+          <div>
+            Developed by <strong>Yongxin Guo, Dorothy Gujral, Eric O. Aboagye, Matthew Williams
+            et al.</strong>
+          </div>
+          <div>
+            Department of Radiotherapy / Imperial College Healthcare NHS Trust<br />
+            Department of Surgery and Cancer / Imperial College London
+          </div>
+          <div>Model version: <strong>FAST-I M2 RSF</strong></div>
+          <div>Contact: <strong>[@nhs.net]</strong></div>
+          <div class="footer-note">
+            <strong>
+              For research and clinical reference only. Predictions should be interpreted alongside
+              clinical assessment by radiation oncologists.
+            </strong>
+          </div>
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      (() => {
+        const primarySite = document.getElementById("primary");
+        const p16Status = document.getElementById("p16");
+        const syncP16Status = () => {
+          p16Status.disabled = primarySite.value !== "2";
+        };
+        primarySite.addEventListener("input", syncP16Status);
+        primarySite.addEventListener("change", syncP16Status);
+        window.addEventListener("pageshow", syncP16Status);
+        syncP16Status();
+
+        // Never let the browser submit patient inputs as a form navigation.
+        document.getElementById("risk-form").addEventListener("submit", (event) => {
+          event.preventDefault();
+          if (typeof globalThis.FASTI?.calculateRisk === "function") {
+            globalThis.FASTI.calculateRisk();
+            return;
+          }
+          const status = document.getElementById("status-message");
+          const loaded = document.readyState === "complete";
+          status.className = `status-box ${loaded ? "status-error" : "status-info"}`;
+          status.textContent = loaded
+            ? "The calculator could not load. Keep the website files together and reload the page."
+            : "The calculator is still loading. Please try again in a moment.";
+          status.scrollIntoView({ block: "nearest" });
+        });
+        document.getElementById("calculate-risk").disabled = false;
+      })();
+    </script>
+    <script defer src="./model.js?v=2"></script>
+    <script defer src="./data/model-data.js?v=4"></script>
+    <script defer src="./app.js?v=5"></script>
+  </body>
+</html>
