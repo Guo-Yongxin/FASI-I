@@ -1,7 +1,6 @@
 """FAST-I M2 RSF calculator, hosted at the existing Streamlit app URL.
 
 The interface and the locked prediction engine are read verbatim from docs/.
-The original Cox-era Streamlit assets remain intact in the repository.
 """
 
 from __future__ import annotations
@@ -11,7 +10,6 @@ import re
 from pathlib import Path
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 st.set_page_config(
     page_title="FAST-I HNSCC Overall Survival Risk Calculator",
@@ -50,55 +48,11 @@ def build_page() -> str:
         if count != 1:
             raise ValueError(f"Expected script reference is missing or duplicated: {filename}")
 
-    # Let the Streamlit container match the website's actual height, including
-    # changes when a prediction becomes visible. No third-party site is loaded.
-    resize_script = """
-    <script>
-      (() => {
-        let lastHeight = 0;
-        let queued = false;
-        const updateHeight = () => {
-          queued = false;
-          const height = Math.ceil(Math.max(
-            document.documentElement.scrollHeight,
-            document.body.scrollHeight,
-            document.querySelector('.page-shell')?.getBoundingClientRect().bottom || 0
-          ));
-          if (Math.abs(height - lastHeight) < 2) return;
-          lastHeight = height;
-          window.parent.postMessage({
-            isStreamlitMessage: true,
-            type: 'streamlit:setFrameHeight',
-            height: height + 8
-          }, '*');
-        };
-        const schedule = () => {
-          if (!queued) {
-            queued = true;
-            requestAnimationFrame(updateHeight);
-          }
-        };
-        window.addEventListener('resize', schedule);
-        new MutationObserver(schedule).observe(document.body, {
-          childList: true, subtree: true, attributes: true,
-          attributeFilter: ['class', 'style', 'open']
-        });
-        if (window.ResizeObserver) {
-          new ResizeObserver(schedule).observe(document.querySelector('.page-shell'));
-        }
-        schedule();
-        window.addEventListener('load', schedule);
-      })();
-    </script>
-    """
-    if html.count("</body>") != 1:
-        raise ValueError("Unexpected HTML body structure.")
-    return html.replace("</body>", resize_script + "\n</body>", 1)
+    return html
 
 
-# Remove Streamlit's default margins and decoration. The static page contains
-# its own responsive sidebar, banner, form, output cards and footer.
-st.markdown(
+# Keep the style-only element out of the main layout so it adds no top gap.
+st.html(
     """
     <style>
       header[data-testid="stHeader"] {display: none;}
@@ -108,13 +62,11 @@ st.markdown(
         max-width: none !important;
       }
       [data-testid="stElementContainer"] {margin: 0 !important;}
-      iframe[title="streamlit.components.v1.html"] {width: 100% !important;}
     </style>
-    """,
-    unsafe_allow_html=True,
+    """
 )
 
 try:
-    components.html(build_page(), height=1650, scrolling=False)
+    st.iframe(build_page(), width="stretch", height="content")
 except (OSError, ValueError) as error:
     st.error(f"Unable to load the FAST-I M2 RSF calculator: {error}")
